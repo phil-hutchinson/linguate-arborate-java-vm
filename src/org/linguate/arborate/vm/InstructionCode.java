@@ -10,8 +10,8 @@ package org.linguate.arborate.vm;
  * @author Phil Hutchinson
  */
 public enum InstructionCode {
-    PUSH_VARIABLE_TO_STACK,
-    POP_STACK_TO_VARIABLE,
+    VARIABLE_TO_STACK,
+    STACK_TO_VARIABLE,
     
     INTEGER_TO_STACK,
     INTEGER_ADD,

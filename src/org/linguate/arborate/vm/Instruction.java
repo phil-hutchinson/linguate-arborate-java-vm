@@ -10,8 +10,8 @@ package org.linguate.arborate.vm;
  * @author Phil Hutchinson
  */
 public class Instruction {
-    private InstructionCode instructionCode;
-    private Object data;
+    private final InstructionCode instructionCode;
+    private final Object data;
 
     public InstructionCode getInstructionCode() {
         return instructionCode;

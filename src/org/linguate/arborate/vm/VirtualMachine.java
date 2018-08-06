@@ -6,7 +6,6 @@
 package org.linguate.arborate.vm;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Stack;
 import java.util.List;
 /**
@@ -14,13 +13,13 @@ import java.util.List;
  * @author Phil Hutchinson
  */
 public class VirtualMachine {
-    private List<FunctionDefinition> funcDefs;
-    private Stack<VirtualMachineStackItem> stack;
+    private final List<FunctionDefinition> funcDefs;
+    private final Stack<Object> stack;
     private FunctionInstance currentFunction;
 
-    public VirtualMachine(List<FunctionDefinition> funcDefs, Stack<VirtualMachineStackItem> stack) {
+    public VirtualMachine(List<FunctionDefinition> funcDefs) {
+        this.stack = new Stack<>();
         this.funcDefs = funcDefs;
-        this.stack = stack;
     }
     
     FunctionInstance getFunctionInstance(FunctionDefinition definition)
@@ -36,15 +35,15 @@ public class VirtualMachine {
             throw new VirtualMachineExecutionException("Local variable count cannot be negative."); 
         }
         
-        List<VariableInstance> localVars = new ArrayList<VariableInstance>(localVarCount);
+        List<Object> localVars = new ArrayList<>(localVarCount);
         for (int count = 0; count < localVarCount; count++) {
-            localVars.add(new VariableInstance());
+            localVars.add(null);
         }
 
         return new FunctionInstance(definition, localVars);
     }
             
-    public VariableInstance execute() {
+    public Object execute() {
         FunctionDefinition startDef = funcDefs.get(0);
         currentFunction = getFunctionInstance(startDef);
         
@@ -58,38 +57,41 @@ public class VirtualMachine {
             Instruction nextInstruction = currentFunction.getDefinition().getCode().get(nextInstructionNumber);
             boolean incrementInstruction = true;
             switch(nextInstruction.getInstructionCode()) {
-                case PUSH_VARIABLE_TO_STACK:
-                    VariableInstance varToPush = currentFunction.getLocalVars().get((Integer)nextInstruction.getData());
-                    stack.push(varToPush.getStackItem());
-                    break;
+                case VARIABLE_TO_STACK: {
+                    int varPos = (Integer)nextInstruction.getData();
+                    Object varToPush = currentFunction.getLocalVars().get(varPos);
+                    stack.push(varToPush);
+                }
+                break;
                 
-                case POP_STACK_TO_VARIABLE:
-                    VariableInstance varToPop = currentFunction.getLocalVars().get((Integer)nextInstruction.getData());
-                    VirtualMachineStackItem stackItem = stack.pop();
-                    varToPop.setFromStackItem(stackItem);
-                    break;
+                case STACK_TO_VARIABLE: {
+                    int varPos = (Integer)nextInstruction.getData();
+                    Object poppedStackItem = stack.pop();
+                    currentFunction.getLocalVars().set(varPos, poppedStackItem);
+                }
+                break;
 
-                case INTEGER_TO_STACK:
-                    long intToAddToStack = (Long) nextInstruction.getData();
-                    VirtualMachineStackItem intToStackItem = new VirtualMachineStackItem(intToAddToStack);
-                    stack.push(intToStackItem);
-                    break;
+                case INTEGER_TO_STACK: {
+                    Long intToPush = (Long) nextInstruction.getData();
+                    stack.push(intToPush);
+                }
+                break;
                 
-                case INTEGER_ADD:
+                case INTEGER_ADD: {
                     long op2 = popInteger();
                     long op1 = popInteger();
                     long sum = op1 + op2;
-                    VirtualMachineStackItem sumStackitem = new VirtualMachineStackItem(sum);
-                    stack.push(sumStackitem);
-                    break;
+                    stack.push(sum);
+                }
+                break;
                     
-                case INTEGER_SUBTRACT:
-                    long op2s = popInteger();
-                    long op1s = popInteger();
-                    long diff = op1s + op2s;
-                    VirtualMachineStackItem diffStackitem = new VirtualMachineStackItem(diff);
-                    stack.push(diffStackitem);
-                    break;
+                case INTEGER_SUBTRACT: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    long diff = op1 - op2;
+                    stack.push(diff);
+                }
+                break;
             }
             if (incrementInstruction) {
                 nextInstructionNumber++;
@@ -99,18 +101,17 @@ public class VirtualMachine {
             }
         }
         if (stack.size() > 0) {
-            VariableInstance returnValue = new VariableInstance();
-            returnValue.setFromStackItem(stack.pop());
+            Object returnValue = stack.pop();
             return returnValue;
         }
         return null;
     }
     
-    private long popInteger() {
-        VirtualMachineStackItem stackItem = stack.pop();
-        if (stackItem.getBaseType() != BaseType.INTEGER) {
+    private Long popInteger() {
+        Object stackItem = stack.pop();
+        if (!(stackItem instanceof Long)) {
             throw new VirtualMachineExecutionException("Stack item was not expected type (integer)");
         }
-        return stackItem.getPrimitiveValue();
+        return (Long)stackItem;
     }
 }

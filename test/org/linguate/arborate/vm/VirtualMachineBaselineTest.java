@@ -7,7 +7,6 @@ package org.linguate.arborate.vm;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -41,26 +40,63 @@ public class VirtualMachineBaselineTest {
     }
 
     @Test
-    public void testSomeMethod() {
-        ArrayList<Instruction> instructions = new ArrayList<Instruction>();
+    public void testIntegerAdd() {
+        ArrayList<Instruction> instructions = new ArrayList<>();
         instructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 12L));
         instructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 17L));
         instructions.add(new Instruction(InstructionCode.INTEGER_ADD));
-        instructions.add(new Instruction(InstructionCode.POP_STACK_TO_VARIABLE, 0));
-        instructions.add(new Instruction(InstructionCode.PUSH_VARIABLE_TO_STACK, 0));
         
-        FunctionDefinition mainFunc = new FunctionDefinition(instructions, 1, 0, 1);
-        List<FunctionDefinition> allFuncs = new ArrayList<FunctionDefinition>();
+        FunctionDefinition mainFunc = new FunctionDefinition(instructions, 1, 0, 0);
+        List<FunctionDefinition> allFuncs = new ArrayList<>();
         allFuncs.add(mainFunc);
         
-        Stack<VirtualMachineStackItem> stack = new Stack<VirtualMachineStackItem>();
+        VirtualMachine virtualMachine = new VirtualMachine(allFuncs);
         
-        ArrayList<VariableInstance> variables = new ArrayList<VariableInstance>();
-        variables.add(new VariableInstance());
+        Object actualValue = virtualMachine.execute();
+        assertEquals(actualValue, 29L);
+    }
+    
+    @Test
+    public void testIntegerSubtract() {
+        ArrayList<Instruction> instructions = new ArrayList<>();
+        instructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 15L));
+        instructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 5L));
+        instructions.add(new Instruction(InstructionCode.INTEGER_SUBTRACT));
         
-        VirtualMachine virtualMachine = new VirtualMachine(allFuncs, stack);
+        FunctionDefinition mainFunc = new FunctionDefinition(instructions, 1, 0, 0);
+        List<FunctionDefinition> allFuncs = new ArrayList<>();
+        allFuncs.add(mainFunc);
         
-        virtualMachine.execute();
+        VirtualMachine virtualMachine = new VirtualMachine(allFuncs);
+        
+        Object actualValue = virtualMachine.execute();
+        assertEquals(actualValue, 10L);
+    }
+    
+    @Test
+    public void testVariable() {
+        ArrayList<Instruction> instructions = new ArrayList<>();
+        instructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 3L));
+        instructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 5L));
+        instructions.add(new Instruction(InstructionCode.INTEGER_ADD));
+        instructions.add(new Instruction(InstructionCode.STACK_TO_VARIABLE, 0));
+
+        instructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 1L));
+        instructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 2L));
+        instructions.add(new Instruction(InstructionCode.INTEGER_ADD));
+
+        instructions.add(new Instruction(InstructionCode.VARIABLE_TO_STACK, 0));
+        
+        instructions.add(new Instruction(InstructionCode.INTEGER_SUBTRACT));
+        
+        FunctionDefinition mainFunc = new FunctionDefinition(instructions, 1, 0, 1);
+        List<FunctionDefinition> allFuncs = new ArrayList<>();
+        allFuncs.add(mainFunc);
+        
+        VirtualMachine virtualMachine = new VirtualMachine(allFuncs);
+        
+        Object actualValue = virtualMachine.execute();
+        assertEquals(actualValue, -5L);
     }
     
 }
