@@ -14,10 +14,12 @@ import java.util.List;
 public class FunctionInstance {
     private final FunctionDefinition definition;
     private final List<Object> localVars;
+    private int nextInstructionNumber;
 
     public FunctionInstance(FunctionDefinition definition, List<Object> localVars) {
         this.definition = definition;
         this.localVars = localVars;
+        nextInstructionNumber = 0;
     }
 
     public FunctionDefinition getDefinition() {
@@ -28,5 +30,15 @@ public class FunctionInstance {
         return localVars;
     }
 
-    
+    public int getNextInstructionNumber() {
+        return nextInstructionNumber;
+    }
+
+    public void setNextInstructionNumber(int nextInstructionNumber) {
+        this.nextInstructionNumber = nextInstructionNumber;
+    }
+
+    public void incrementNextInstructionNumber() {
+        nextInstructionNumber++;
+    }
 }

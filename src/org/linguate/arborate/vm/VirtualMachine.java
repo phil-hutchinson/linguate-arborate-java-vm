@@ -15,11 +15,13 @@ import java.util.List;
 public class VirtualMachine {
     private final List<FunctionDefinition> funcDefs;
     private final Stack<Object> stack;
+    private final Stack<FunctionInstance> functionStack;
     private FunctionInstance currentFunction;
 
     public VirtualMachine(List<FunctionDefinition> funcDefs) {
         this.stack = new Stack<>();
         this.funcDefs = funcDefs;
+        this.functionStack = new Stack<>();
     }
     
     FunctionInstance getFunctionInstance(FunctionDefinition definition)
@@ -51,10 +53,9 @@ public class VirtualMachine {
             throw new IllegalArgumentException("Primary function cannot take parameters (yet)");
         }
         
-        int nextInstructionNumber = 0;
         boolean stillProcessing = true;
         while (stillProcessing) {
-            Instruction nextInstruction = currentFunction.getDefinition().getCode().get(nextInstructionNumber);
+            Instruction nextInstruction = currentFunction.getDefinition().getCode().get(currentFunction.getNextInstructionNumber());
             boolean incrementInstruction = true;
             switch(nextInstruction.getInstructionCode()) {
                 case VARIABLE_TO_STACK: {
@@ -92,14 +93,40 @@ public class VirtualMachine {
                     stack.push(diff);
                 }
                 break;
+                
+                case CALL_FUNCTION: {
+                    int functionIndex = (Integer) nextInstruction.getData();
+                    if (funcDefs.size() <= functionIndex) {
+                        throw new VirtualMachineExecutionException("Invalid function index");
+                    }
+                    currentFunction.incrementNextInstructionNumber();
+                    functionStack.push(currentFunction);
+
+                    FunctionDefinition definition = funcDefs.get(functionIndex);
+                    currentFunction = getFunctionInstance(definition);
+                    incrementInstruction = false;
+                }
+                break;
+                
+                default:
+                    throw new VirtualMachineExecutionException("Encountered unknown operation code.");
             }
             if (incrementInstruction) {
-                nextInstructionNumber++;
+                currentFunction.incrementNextInstructionNumber();
             }
-            if (nextInstructionNumber >= currentFunction.getDefinition().getCode().size()) {
-                stillProcessing = false;
+            if (currentFunction.getNextInstructionNumber() >= currentFunction.getDefinition().getCode().size()) {
+                if (functionStack.empty()) {
+                    stillProcessing = false;
+                    currentFunction = null;
+                } else {
+                    currentFunction = functionStack.pop();
+                }
             }
         }
+        if (functionStack.size() > 0 || currentFunction != null) {
+            throw new VirtualMachineExecutionException("Function stack not cleared at end of execution.");
+        }
+        
         if (stack.size() > 0) {
             Object returnValue = stack.pop();
             return returnValue;

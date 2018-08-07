@@ -99,4 +99,28 @@ public class VirtualMachineBaselineTest {
         assertEquals(actualValue, -5L);
     }
     
+    @Test
+    public void testFunctionCall() {
+        ArrayList<Instruction> mainInstructions = new ArrayList<>();
+        mainInstructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 20L));
+        mainInstructions.add(new Instruction(InstructionCode.CALL_FUNCTION, 1));
+        mainInstructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 30L));
+        mainInstructions.add(new Instruction(InstructionCode.CALL_FUNCTION, 1));
+        mainInstructions.add(new Instruction(InstructionCode.INTEGER_ADD));
+        FunctionDefinition mainFunc = new FunctionDefinition(mainInstructions, 1, 0, 1);
+        
+        ArrayList<Instruction> subInstructions = new ArrayList<>();
+        subInstructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 5L));
+        subInstructions.add(new Instruction(InstructionCode.INTEGER_SUBTRACT));
+        FunctionDefinition subFunc = new FunctionDefinition(subInstructions, 1, 0, 1);
+        
+        List<FunctionDefinition> allFuncs = new ArrayList<>();
+        allFuncs.add(mainFunc);
+        allFuncs.add(subFunc);
+        
+        VirtualMachine virtualMachine = new VirtualMachine(allFuncs);
+        
+        Object actualValue = virtualMachine.execute();
+        assertEquals(actualValue, 40L);
+    }
 }
