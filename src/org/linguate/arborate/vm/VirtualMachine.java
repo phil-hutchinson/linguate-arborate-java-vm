@@ -93,6 +93,30 @@ public class VirtualMachine {
                 }
                 break;
                 
+                case INTEGER_MULTIPLY: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    long product = op1 * op2;
+                    stack.push(product);
+                }
+                break;
+                
+                case INTEGER_DIVIDE: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    long integerQuotient = op1 / op2;
+                    stack.push(integerQuotient);
+                }
+                break;
+                
+                case INTEGER_MODULUS: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    long remainder = op1 % op2;
+                    stack.push(remainder);
+                }
+                break;
+                
                 case CALL_FUNCTION: {
                     int functionIndex = (Integer) nextInstruction.getData();
                     if (funcDefs.size() <= functionIndex) {

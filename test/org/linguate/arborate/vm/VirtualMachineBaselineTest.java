@@ -41,46 +41,6 @@ public class VirtualMachineBaselineTest {
     }
 
     @Test
-    public void testIntegerAdd() {
-        ArrayList<Instruction> instructions = new ArrayList<>();
-        instructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 12L));
-        instructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 17L));
-        instructions.add(new Instruction(InstructionCode.INTEGER_ADD));
-        
-        List<BaseType> inParams = new ArrayList();
-        List<BaseType> outParams = Arrays.asList(BaseType.INTEGER);
-        FunctionDefinition mainFunc = new FunctionDefinition(instructions, 0, inParams, outParams);
-        List<FunctionDefinition> allFuncs = new ArrayList<>();
-        allFuncs.add(mainFunc);
-        
-        VirtualMachine virtualMachine = new VirtualMachine(allFuncs);
-        
-        List<Object> actualValue = virtualMachine.execute();
-        assertEquals(1, actualValue.size());
-        assertEquals(29L, actualValue.get(0));
-    }
-    
-    @Test
-    public void testIntegerSubtract() {
-        ArrayList<Instruction> instructions = new ArrayList<>();
-        instructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 15L));
-        instructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 5L));
-        instructions.add(new Instruction(InstructionCode.INTEGER_SUBTRACT));
-        
-        List<BaseType> inParams = new ArrayList();
-        List<BaseType> outParams = Arrays.asList(BaseType.INTEGER);
-        FunctionDefinition mainFunc = new FunctionDefinition(instructions, 0, inParams, outParams);
-        List<FunctionDefinition> allFuncs = new ArrayList<>();
-        allFuncs.add(mainFunc);
-        
-        VirtualMachine virtualMachine = new VirtualMachine(allFuncs);
-        
-        List<Object> actualValue = virtualMachine.execute();
-        assertEquals(1, actualValue.size());
-        assertEquals(10L, actualValue.get(0));
-    }
-    
-    @Test
     public void testVariable() {
         ArrayList<Instruction> instructions = new ArrayList<>();
         instructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 3L));
