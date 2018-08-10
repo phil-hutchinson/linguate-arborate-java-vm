@@ -6,6 +6,7 @@
 package org.linguate.arborate.vm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Stack;
 import java.util.List;
 /**
@@ -45,13 +46,11 @@ public class VirtualMachine {
         return new FunctionInstance(definition, localVars);
     }
             
-    public Object execute() {
+    public List<Object> execute(Object ...args) {
         FunctionDefinition startDef = funcDefs.get(0);
-        currentFunction = getFunctionInstance(startDef);
+        PrepareArguments(startDef, args);
         
-        if (startDef.getInParamCount() != 0) {
-            throw new IllegalArgumentException("Primary function cannot take parameters (yet)");
-        }
+        currentFunction = getFunctionInstance(startDef);
         
         boolean stillProcessing = true;
         while (stillProcessing) {
@@ -117,23 +116,126 @@ public class VirtualMachine {
             if (currentFunction.getNextInstructionNumber() >= currentFunction.getDefinition().getCode().size()) {
                 if (functionStack.empty()) {
                     stillProcessing = false;
-                    currentFunction = null;
                 } else {
                     currentFunction = functionStack.pop();
                 }
             }
         }
-        if (functionStack.size() > 0 || currentFunction != null) {
+        
+        return PrepareReturn();
+    }
+
+    private void PrepareArguments(FunctionDefinition startDef, Object[] args) throws VirtualMachineExecutionException, IllegalArgumentException {
+        if (startDef.getInParamCount() != args.length) {
+            throw new IllegalArgumentException("Primary function does not take correct amount of arguments.");
+        }
+        
+        List<BaseType> inParams = startDef.getInParams();
+        for (int argPos = 0; argPos < args.length; argPos++) {
+            switch(inParams.get(argPos)) {
+                case NULL:
+                    throw new VirtualMachineExecutionException("Function argument type cannot be NULL.");
+                    
+                case INTEGER:
+                    if (args[argPos] instanceof Long) {
+                        stack.push(args[argPos]); // ENHANCMENT accept shorter types
+                    } else {
+                        throw new IllegalArgumentException("Argument is not appropriate type for method.");
+                    }
+                    break;
+                    
+                case STRING:
+                    if (args[argPos] instanceof String) {
+                        stack.push(args[argPos]);
+                    } else {
+                        throw new IllegalArgumentException("Argument is not appropriate type for method.");
+                    }
+                    break;
+                    
+                case BOOLEAN:
+                    if (args[argPos] instanceof Boolean) {
+                        stack.push(args[argPos]);
+                    } else {
+                        throw new IllegalArgumentException("Argument is not appropriate type for method.");
+                    }
+                    break;
+                    
+                case BYTE:
+                    if (args[argPos] instanceof Byte) {
+                        stack.push(args[argPos]);
+                    } else {
+                        throw new IllegalArgumentException("Argument is not appropriate type for method.");
+                    }
+                    break;
+                    
+                default:
+                    throw new IllegalArgumentException("Argument of unknown type.");
+            }
+        }
+    }
+    
+    private List<Object> PrepareReturn() throws VirtualMachineExecutionException, IllegalArgumentException {
+        if (functionStack.size() > 0) {
             throw new VirtualMachineExecutionException("Function stack not cleared at end of execution.");
         }
         
-        if (stack.size() > 0) {
-            Object returnValue = stack.pop();
-            return returnValue;
+        if (stack.size() != currentFunction.getDefinition().getOutParamCount()) {
+            throw new VirtualMachineExecutionException("Wrong number of items on stack at end of execution.");
         }
-        return null;
+        
+        ArrayList<Object> returnValue = new ArrayList<>();
+         
+        List<BaseType> outParams = currentFunction.getDefinition().getOutParams();
+
+        for (int argPos = 0; argPos < outParams.size(); argPos++) {
+            Object currParam = stack.pop();
+            switch(outParams.get(argPos)) {
+                case NULL:
+                    throw new VirtualMachineExecutionException("Function argument type cannot be NULL.");
+                    
+                case INTEGER:
+                    if (currParam instanceof Long) {
+                        returnValue.add(currParam);
+                    } else {
+                        throw new IllegalArgumentException("Stack item is not appropriate type for function result.");
+                    }
+                    break;
+                    
+                case STRING:
+                    if (currParam instanceof String) {
+                        returnValue.add(currParam);
+                    } else {
+                        throw new IllegalArgumentException("Stack item is not appropriate type for function result.");
+                    }
+                    break;
+                    
+                    
+                case BOOLEAN:
+                    if (currParam instanceof Boolean) {
+                        returnValue.add(currParam);
+                    } else {
+                        throw new IllegalArgumentException("Stack item is not appropriate type for function result.");
+                    }
+                    break;
+                    
+                    
+                case BYTE:
+                    if (currParam instanceof Byte) {
+                        returnValue.add(currParam);
+                    } else {
+                        throw new IllegalArgumentException("Stack item is not appropriate type for function result.");
+                    }
+                    break;
+                    
+                default:
+                    throw new IllegalArgumentException("Argument of unknown type.");
+            }
+        }
+        
+        Collections.reverse(returnValue);
+        return returnValue;
     }
-    
+
     private Long popInteger() {
         Object stackItem = stack.pop();
         if (!(stackItem instanceof Long)) {

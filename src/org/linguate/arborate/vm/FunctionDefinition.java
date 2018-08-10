@@ -5,6 +5,8 @@
  */
 package org.linguate.arborate.vm;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -14,14 +16,24 @@ import java.util.List;
 public class FunctionDefinition {
     private final List<Instruction> code;
     private final int varCount;
+    private final List<BaseType> inParams;
     private final int inParamCount;
+    private final List<BaseType> outParams;
     private final int outParamCount;
 
-    public FunctionDefinition(List<Instruction> code, int varCount, int inParamCount, int outParamCount) {
+    public FunctionDefinition(List<Instruction> code, int varCount, Iterable<BaseType> inParams, Iterable<BaseType> outParams) {
         this.code = code;
         this.varCount = varCount;
-        this.inParamCount = inParamCount;
-        this.outParamCount = outParamCount;
+
+        List<BaseType> inParamList = new ArrayList<>();
+        List<BaseType> outParamList = new ArrayList<>();
+        inParams.forEach(inParamList::add);
+        outParams.forEach(outParamList::add);
+        this.inParams = Collections.unmodifiableList(inParamList);
+        this.outParams = Collections.unmodifiableList(outParamList);
+        
+        this.inParamCount = inParamList.size();
+        this.outParamCount = outParamList.size();
     }
 
     public List<Instruction> getCode() {
@@ -32,6 +44,14 @@ public class FunctionDefinition {
         return varCount;
     }
     
+    public List<BaseType> getInParams() {
+        return inParams;
+    }
+
+    public List<BaseType> getOutParams() {
+        return outParams;
+    }
+
     public int getInParamCount() {
         return inParamCount;
     }
@@ -39,6 +59,4 @@ public class FunctionDefinition {
     public int getOutParamCount() {
         return outParamCount;
     }
-    
-    
 }
