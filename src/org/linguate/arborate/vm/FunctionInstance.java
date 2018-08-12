@@ -11,12 +11,12 @@ import java.util.List;
  *
  * @author Phil Hutchinson
  */
-public class FunctionInstance {
+class FunctionInstance {
     private final FunctionDefinition definition;
-    private final List<Object> localVars;
+    private final List<ArborateObject> localVars;
     private int nextInstructionNumber;
 
-    public FunctionInstance(FunctionDefinition definition, List<Object> localVars) {
+    public FunctionInstance(FunctionDefinition definition, List<ArborateObject> localVars) {
         this.definition = definition;
         this.localVars = localVars;
         nextInstructionNumber = 0;
@@ -26,7 +26,7 @@ public class FunctionInstance {
         return definition;
     }
 
-    public List<Object> getLocalVars() {
+    public List<ArborateObject> getLocalVars() {
         return localVars;
     }
 

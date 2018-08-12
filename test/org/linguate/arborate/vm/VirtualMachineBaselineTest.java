@@ -66,7 +66,8 @@ public class VirtualMachineBaselineTest {
         
         List<Object> actualValue = virtualMachine.execute();
         assertEquals(1, actualValue.size());
-        assertEquals(-5L, actualValue.get(0));
+        ArborateInteger actual = (ArborateInteger) actualValue.get(0);
+        assertEquals(-5L, actual.getValue());
     }
     
     @Test
@@ -96,7 +97,8 @@ public class VirtualMachineBaselineTest {
         
         List<Object> actualValue = virtualMachine.execute();
         assertEquals(1, actualValue.size());
-        assertEquals(40L, actualValue.get(0));
+        ArborateInteger actual = (ArborateInteger) actualValue.get(0);
+        assertEquals(40L, actual.getValue());
     }
 
     @Test
@@ -115,7 +117,8 @@ public class VirtualMachineBaselineTest {
         
         List<Object> actualValue = virtualMachine.execute(45L);
         assertEquals(1, actualValue.size());
-        assertEquals(65L, actualValue.get(0));
+        ArborateInteger actual = (ArborateInteger) actualValue.get(0);
+        assertEquals(65L, actual.getValue());
     }
 
     @Test
@@ -134,7 +137,8 @@ public class VirtualMachineBaselineTest {
         
         List<Object> actualValue = virtualMachine.execute(15L, 50L, 100L);
         assertEquals(1, actualValue.size());
-        assertEquals(-135L, actualValue.get(0));
+        ArborateInteger actual = (ArborateInteger) actualValue.get(0);
+        assertEquals(-135L, actual.getValue());
     }
 
     @Test
@@ -160,8 +164,10 @@ public class VirtualMachineBaselineTest {
         
         List<Object> actualValue = virtualMachine.execute(25L, 3L);
         assertEquals(2, actualValue.size());
-        assertEquals(28L, actualValue.get(0));
-        assertEquals(22L, actualValue.get(1));
+        ArborateInteger actual1 = (ArborateInteger) actualValue.get(0);
+        ArborateInteger actual2 = (ArborateInteger) actualValue.get(1);
+        assertEquals(28L, actual1.getValue());
+        assertEquals(22L, actual2.getValue());
     }
 
     @Test
@@ -194,6 +200,7 @@ public class VirtualMachineBaselineTest {
         
         List<Object> actualValue = virtualMachine.execute();
         assertEquals(1, actualValue.size());
-        assertEquals(13L, actualValue.get(0));
+        ArborateInteger actual = (ArborateInteger) actualValue.get(0);
+        assertEquals(13L, actual.getValue());
     }
 }

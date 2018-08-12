@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class VirtualMachine {
     private final List<FunctionDefinition> funcDefs;
-    private final Stack<Object> stack;
+    private final Stack<ArborateObject> stack;
     private final Stack<FunctionInstance> functionStack;
     private FunctionInstance currentFunction;
 
@@ -38,7 +38,7 @@ public class VirtualMachine {
             throw new VirtualMachineExecutionException("Local variable count cannot be negative."); 
         }
         
-        List<Object> localVars = new ArrayList<>(localVarCount);
+        List<ArborateObject> localVars = new ArrayList<>(localVarCount);
         for (int count = 0; count < localVarCount; count++) {
             localVars.add(null);
         }
@@ -59,20 +59,21 @@ public class VirtualMachine {
             switch(nextInstruction.getInstructionCode()) {
                 case VARIABLE_TO_STACK: {
                     int varPos = (Integer)nextInstruction.getData();
-                    Object varToPush = currentFunction.getLocalVars().get(varPos);
+                    ArborateObject varToPush = currentFunction.getLocalVars().get(varPos);
                     stack.push(varToPush);
                 }
                 break;
                 
                 case STACK_TO_VARIABLE: {
                     int varPos = (Integer)nextInstruction.getData();
-                    Object poppedStackItem = stack.pop();
+                    ArborateObject poppedStackItem = stack.pop();
                     currentFunction.getLocalVars().set(varPos, poppedStackItem);
                 }
                 break;
 
                 case INTEGER_TO_STACK: {
-                    Long intToPush = (Long) nextInstruction.getData();
+                    long val = (long) nextInstruction.getData();
+                    ArborateInteger intToPush = new ArborateInteger(val) ;
                     stack.push(intToPush);
                 }
                 break;
@@ -80,7 +81,7 @@ public class VirtualMachine {
                 case INTEGER_ADD: {
                     long op2 = popInteger();
                     long op1 = popInteger();
-                    long sum = op1 + op2;
+                    ArborateInteger sum = new ArborateInteger(op1 + op2);
                     stack.push(sum);
                 }
                 break;
@@ -88,7 +89,7 @@ public class VirtualMachine {
                 case INTEGER_SUBTRACT: {
                     long op2 = popInteger();
                     long op1 = popInteger();
-                    long diff = op1 - op2;
+                    ArborateInteger diff = new ArborateInteger(op1 - op2);
                     stack.push(diff);
                 }
                 break;
@@ -96,7 +97,7 @@ public class VirtualMachine {
                 case INTEGER_MULTIPLY: {
                     long op2 = popInteger();
                     long op1 = popInteger();
-                    long product = op1 * op2;
+                    ArborateInteger product = new ArborateInteger(op1 * op2);
                     stack.push(product);
                 }
                 break;
@@ -104,7 +105,7 @@ public class VirtualMachine {
                 case INTEGER_DIVIDE: {
                     long op2 = popInteger();
                     long op1 = popInteger();
-                    long integerQuotient = op1 / op2;
+                    ArborateInteger integerQuotient = new ArborateInteger(op1 / op2);
                     stack.push(integerQuotient);
                 }
                 break;
@@ -112,7 +113,7 @@ public class VirtualMachine {
                 case INTEGER_MODULUS: {
                     long op2 = popInteger();
                     long op1 = popInteger();
-                    long remainder = op1 % op2;
+                    ArborateInteger remainder = new ArborateInteger(op1 % op2);
                     stack.push(remainder);
                 }
                 break;
@@ -120,7 +121,7 @@ public class VirtualMachine {
                 case INTEGER_SHIFT_LEFT: {
                     long op2 = popInteger();
                     long op1 = popInteger();
-                    long shifted = op1 << op2;
+                    ArborateInteger shifted = new ArborateInteger(op1 << op2);
                     stack.push(shifted);
                 }
                 break;
@@ -128,7 +129,7 @@ public class VirtualMachine {
                 case INTEGER_SHIFT_RIGHT_ARITHMETIC: {
                     long op2 = popInteger();
                     long op1 = popInteger();
-                    long shifted = op1 >> op2;
+                    ArborateInteger shifted = new ArborateInteger(op1 >> op2);
                     stack.push(shifted);
                 }
                 break;
@@ -136,7 +137,7 @@ public class VirtualMachine {
                 case INTEGER_SHIFT_RIGHT_LOGICAL: {
                     long op2 = popInteger();
                     long op1 = popInteger();
-                    long shifted = op1 >>> op2;
+                    ArborateInteger shifted = new ArborateInteger(op1 >>> op2);
                     stack.push(shifted);
                 }
                 break;
@@ -145,7 +146,7 @@ public class VirtualMachine {
                     long op2 = popInteger();
                     long op1 = popInteger();
                     long rot = Long.rotateLeft(op1, (int)op2);
-                    stack.push(rot);
+                    stack.push(new ArborateInteger(rot));
                 }
                 break;
                 
@@ -153,14 +154,14 @@ public class VirtualMachine {
                     long op2 = popInteger();
                     long op1 = popInteger();
                     long rot = Long.rotateRight(op1, (int)op2);
-                    stack.push(rot);
+                    stack.push(new ArborateInteger(rot));
                 }
                 break;
                 
                 case INTEGER_BITWISE_AND: {
                     long op2 = popInteger();
                     long op1 = popInteger();
-                    long result = op1 & op2;
+                    ArborateInteger result = new ArborateInteger(op1 & op2);
                     stack.push(result);
                 }
                 break;
@@ -168,14 +169,14 @@ public class VirtualMachine {
                 case INTEGER_BITWISE_OR: {
                     long op2 = popInteger();
                     long op1 = popInteger();
-                    long result = op1 | op2;
+                    ArborateInteger result = new ArborateInteger(op1 | op2);
                     stack.push(result);
                 }
                 break;
                 
                 case INTEGER_BITWISE_NOT: {
                     long op = popInteger();
-                    long result = ~op;
+                    ArborateInteger result = new ArborateInteger(~op);
                     stack.push(result);
                 }
                 break;
@@ -183,7 +184,7 @@ public class VirtualMachine {
                 case INTEGER_BITWISE_XOR: {
                     long op2 = popInteger();
                     long op1 = popInteger();
-                    long result = op1 ^ op2;
+                    ArborateInteger result = new ArborateInteger(op1 ^ op2);
                     stack.push(result);
                 }
                 break;
@@ -232,32 +233,44 @@ public class VirtualMachine {
                     throw new VirtualMachineExecutionException("Function argument type cannot be NULL.");
                     
                 case INTEGER:
-                    if (args[argPos] instanceof Long) {
-                        stack.push(args[argPos]); // ENHANCMENT accept shorter types
+                    if (args[argPos] instanceof ArborateInteger) {
+                        stack.push((ArborateInteger)args[argPos]); 
+                    } else if (args[argPos] instanceof Long) {
+                        long val = (Long) args[argPos];
+                        stack.push(new ArborateInteger(val)); // ENHANCMENT accept shorter types
                     } else {
                         throw new IllegalArgumentException("Argument is not appropriate type for method.");
                     }
                     break;
                     
                 case STRING:
-                    if (args[argPos] instanceof String) {
-                        stack.push(args[argPos]);
+                    if (args[argPos] instanceof ArborateString) {
+                        stack.push((ArborateString)args[argPos]); 
+                    } else if (args[argPos] instanceof String) {
+                        String val = (String) args[argPos];
+                        stack.push(new ArborateString(val)); // ENHANCMENT accept shorter types
                     } else {
                         throw new IllegalArgumentException("Argument is not appropriate type for method.");
                     }
                     break;
                     
                 case BOOLEAN:
-                    if (args[argPos] instanceof Boolean) {
-                        stack.push(args[argPos]);
+                    if (args[argPos] instanceof ArborateBoolean) {
+                        stack.push((ArborateBoolean)args[argPos]); 
+                    } else if (args[argPos] instanceof Boolean) {
+                        boolean val = (Boolean) args[argPos];
+                        stack.push(new ArborateBoolean(val)); // ENHANCMENT accept shorter types
                     } else {
                         throw new IllegalArgumentException("Argument is not appropriate type for method.");
                     }
                     break;
                     
                 case BYTE:
-                    if (args[argPos] instanceof Byte) {
-                        stack.push(args[argPos]);
+                    if (args[argPos] instanceof ArborateByte) {
+                        stack.push((ArborateByte)args[argPos]); 
+                    } else if (args[argPos] instanceof Byte) {
+                        byte val = (Byte) args[argPos];
+                        stack.push(new ArborateByte(val)); // ENHANCMENT accept shorter types
                     } else {
                         throw new IllegalArgumentException("Argument is not appropriate type for method.");
                     }
@@ -289,7 +302,7 @@ public class VirtualMachine {
                     throw new VirtualMachineExecutionException("Function argument type cannot be NULL.");
                     
                 case INTEGER:
-                    if (currParam instanceof Long) {
+                    if (currParam instanceof ArborateInteger) {
                         returnValue.add(currParam);
                     } else {
                         throw new IllegalArgumentException("Stack item is not appropriate type for function result.");
@@ -297,7 +310,7 @@ public class VirtualMachine {
                     break;
                     
                 case STRING:
-                    if (currParam instanceof String) {
+                    if (currParam instanceof ArborateString) {
                         returnValue.add(currParam);
                     } else {
                         throw new IllegalArgumentException("Stack item is not appropriate type for function result.");
@@ -306,7 +319,7 @@ public class VirtualMachine {
                     
                     
                 case BOOLEAN:
-                    if (currParam instanceof Boolean) {
+                    if (currParam instanceof ArborateBoolean) {
                         returnValue.add(currParam);
                     } else {
                         throw new IllegalArgumentException("Stack item is not appropriate type for function result.");
@@ -315,7 +328,7 @@ public class VirtualMachine {
                     
                     
                 case BYTE:
-                    if (currParam instanceof Byte) {
+                    if (currParam instanceof ArborateByte) {
                         returnValue.add(currParam);
                     } else {
                         throw new IllegalArgumentException("Stack item is not appropriate type for function result.");
@@ -331,11 +344,11 @@ public class VirtualMachine {
         return returnValue;
     }
 
-    private Long popInteger() {
-        Object stackItem = stack.pop();
-        if (!(stackItem instanceof Long)) {
+    private long popInteger() {
+        ArborateObject stackItem = stack.pop();
+        if (!(stackItem instanceof ArborateInteger)) {
             throw new VirtualMachineExecutionException("Stack item was not expected type (integer)");
         }
-        return (Long)stackItem;
+        return ((ArborateInteger)stackItem).getValue();
     }
 }
