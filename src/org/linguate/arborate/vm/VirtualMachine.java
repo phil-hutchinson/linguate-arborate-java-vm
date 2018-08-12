@@ -1,6 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ * To change this license header: choose License Headers in Project Properties.
+ * To change this template file: choose Tools | Templates
  * and open the template in the editor.
  */
 package org.linguate.arborate.vm;
@@ -114,6 +114,77 @@ public class VirtualMachine {
                     long op1 = popInteger();
                     long remainder = op1 % op2;
                     stack.push(remainder);
+                }
+                break;
+                
+                case INTEGER_SHIFT_LEFT: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    long shifted = op1 << op2;
+                    stack.push(shifted);
+                }
+                break;
+                
+                case INTEGER_SHIFT_RIGHT_ARITHMETIC: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    long shifted = op1 >> op2;
+                    stack.push(shifted);
+                }
+                break;
+                
+                case INTEGER_SHIFT_RIGHT_LOGICAL: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    long shifted = op1 >>> op2;
+                    stack.push(shifted);
+                }
+                break;
+                
+                case INTEGER_ROTATE_LEFT: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    long rot = Long.rotateLeft(op1, (int)op2);
+                    stack.push(rot);
+                }
+                break;
+                
+                case INTEGER_ROTATE_RIGHT: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    long rot = Long.rotateRight(op1, (int)op2);
+                    stack.push(rot);
+                }
+                break;
+                
+                case INTEGER_BITWISE_AND: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    long result = op1 & op2;
+                    stack.push(result);
+                }
+                break;
+                
+                case INTEGER_BITWISE_OR: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    long result = op1 | op2;
+                    stack.push(result);
+                }
+                break;
+                
+                case INTEGER_BITWISE_NOT: {
+                    long op = popInteger();
+                    long result = ~op;
+                    stack.push(result);
+                }
+                break;
+                
+                case INTEGER_BITWISE_XOR: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    long result = op1 ^ op2;
+                    stack.push(result);
                 }
                 break;
                 
