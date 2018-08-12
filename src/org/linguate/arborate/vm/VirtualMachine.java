@@ -58,16 +58,16 @@ public class VirtualMachine {
             boolean incrementInstruction = true;
             switch(nextInstruction.getInstructionCode()) {
                 case VARIABLE_TO_STACK: {
-                    int varPos = (Integer)nextInstruction.getData();
-                    ArborateObject varToPush = currentFunction.getLocalVars().get(varPos);
+                    long varPos = (Long)nextInstruction.getData();
+                    ArborateObject varToPush = currentFunction.getLocalVars().get((int)varPos);
                     stack.push(varToPush);
                 }
                 break;
                 
                 case STACK_TO_VARIABLE: {
-                    int varPos = (Integer)nextInstruction.getData();
+                    long varPos = (Long)nextInstruction.getData();
                     ArborateObject poppedStackItem = stack.pop();
-                    currentFunction.getLocalVars().set(varPos, poppedStackItem);
+                    currentFunction.getLocalVars().set((int)varPos, poppedStackItem);
                 }
                 break;
 
@@ -238,16 +238,50 @@ public class VirtualMachine {
                 break;
                 
                 case CALL_FUNCTION: {
-                    int functionIndex = (Integer) nextInstruction.getData();
+                    long functionIndex = (Long) nextInstruction.getData();
                     if (funcDefs.size() <= functionIndex) {
                         throw new VirtualMachineExecutionException("Invalid function index");
                     }
                     currentFunction.incrementNextInstructionNumber();
                     functionStack.push(currentFunction);
 
-                    FunctionDefinition definition = funcDefs.get(functionIndex);
+                    FunctionDefinition definition = funcDefs.get((int)functionIndex);
                     currentFunction = getFunctionInstance(definition);
                     incrementInstruction = false;
+                }
+                break;
+                
+                case EXIT_FUNCTION: {
+                    if (functionStack.empty()) {
+                        stillProcessing = false;
+                    } else {
+                        currentFunction = functionStack.pop();
+                    }
+                    incrementInstruction = false;
+                }
+                break;
+                
+                case BRANCH:  {
+                    incrementInstruction = false;
+                    performBranch(nextInstruction);
+                }
+                break;
+                
+                case BRANCH_TRUE: {
+                    boolean flag = popBoolean();
+                    if (flag) {
+                        incrementInstruction = false;
+                        performBranch(nextInstruction);
+                    }
+                }
+                break;
+                
+                case BRANCH_FALSE: {
+                    boolean flag = popBoolean();
+                    if (!flag) {
+                        incrementInstruction = false;
+                        performBranch(nextInstruction);
+                    }
                 }
                 break;
                 
@@ -267,6 +301,14 @@ public class VirtualMachine {
         }
         
         return PrepareReturn();
+    }
+
+    private void performBranch(Instruction nextInstruction) throws VirtualMachineExecutionException {
+        long newNextInstruction = (Long)(nextInstruction.getData());
+        if (currentFunction.getDefinition().getCode().size() <= newNextInstruction) {
+            throw new VirtualMachineExecutionException("Branch identified invalid instruction nubmer.");
+        }
+        currentFunction.setNextInstructionNumber((int) newNextInstruction);
     }
 
     private void PrepareArguments(FunctionDefinition startDef, Object[] args) throws VirtualMachineExecutionException, IllegalArgumentException {
@@ -398,5 +440,13 @@ public class VirtualMachine {
             throw new VirtualMachineExecutionException("Stack item was not expected type (integer)");
         }
         return ((ArborateInteger)stackItem).getValue();
+    }
+
+    private boolean popBoolean() {
+        ArborateObject stackItem = stack.pop();
+        if (!(stackItem instanceof ArborateBoolean)) {
+            throw new VirtualMachineExecutionException("Stack item was not expected type (integer)");
+        }
+        return ((ArborateBoolean)stackItem).getValue();
     }
 }

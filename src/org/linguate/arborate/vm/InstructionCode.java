@@ -41,4 +41,8 @@ public enum InstructionCode {
     
     // function operations
     CALL_FUNCTION,
+    EXIT_FUNCTION,
+    BRANCH,
+    BRANCH_TRUE,
+    BRANCH_FALSE,
 }
