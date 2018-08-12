@@ -189,6 +189,54 @@ public class VirtualMachine {
                 }
                 break;
                 
+                case INTEGER_EQUAL: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    ArborateBoolean result = new ArborateBoolean(op1 == op2);
+                    stack.push(result);
+                }
+                break;
+                
+                case INTEGER_NOT_EQUAL: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    ArborateBoolean result = new ArborateBoolean(op1 != op2);
+                    stack.push(result);
+                }
+                break;
+                
+                case INTEGER_GREATER_THAN: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    ArborateBoolean result = new ArborateBoolean(op1 > op2);
+                    stack.push(result);
+                }
+                break;
+                
+                case INTEGER_LESS_THAN: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    ArborateBoolean result = new ArborateBoolean(op1 < op2);
+                    stack.push(result);
+                }
+                break;
+                
+                case INTEGER_GREATER_EQUAL: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    ArborateBoolean result = new ArborateBoolean(op1 >= op2);
+                    stack.push(result);
+                }
+                break;
+                
+                case INTEGER_LESS_EQUAL: {
+                    long op2 = popInteger();
+                    long op1 = popInteger();
+                    ArborateBoolean result = new ArborateBoolean(op1 <= op2);
+                    stack.push(result);
+                }
+                break;
+                
                 case CALL_FUNCTION: {
                     int functionIndex = (Integer) nextInstruction.getData();
                     if (funcDefs.size() <= functionIndex) {

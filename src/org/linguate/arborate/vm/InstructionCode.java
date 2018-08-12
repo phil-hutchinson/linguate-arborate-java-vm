@@ -31,6 +31,14 @@ public enum InstructionCode {
     INTEGER_BITWISE_OR,
     INTEGER_BITWISE_NOT,
     INTEGER_BITWISE_XOR,
+    INTEGER_EQUAL,
+    INTEGER_NOT_EQUAL,
+    INTEGER_GREATER_THAN,
+    INTEGER_LESS_THAN,
+    INTEGER_GREATER_EQUAL,
+    INTEGER_LESS_EQUAL,
+    
+    
     // function operations
     CALL_FUNCTION,
 }

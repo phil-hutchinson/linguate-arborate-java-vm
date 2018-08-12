@@ -50,7 +50,18 @@ public class VirtualMachineIntegerTest {
         ArborateInteger result = (ArborateInteger) actualValue.get(0);
         return result.getValue();
     }
+
+    private boolean simpleIntTestBooleanResult(List<Instruction> instructions) {
+        FunctionDefinition mainFunc = new FunctionDefinition(instructions, 0, Arrays.asList(), Arrays.asList(BaseType.BOOLEAN));
         
+        VirtualMachine virtualMachine = new VirtualMachine(Arrays.asList(mainFunc));
+        
+        List<Object> actualValue = virtualMachine.execute();
+        assertEquals(1, actualValue.size());
+        ArborateBoolean result = (ArborateBoolean) actualValue.get(0);
+        return result.getValue();
+    }
+    
     @Test
     public void testIntegerConstToStack() {
         long actualValue = simpleIntTest(Arrays.asList(
@@ -597,5 +608,203 @@ public class VirtualMachineIntegerTest {
         ));
         
         assertEquals(0x4564599B292A40F1L, actualValue);
+    }
+    
+    @Test
+    public void testIntegerEqualWhenGreater() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 2353525235235L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -100L),
+            new Instruction(InstructionCode.INTEGER_EQUAL)
+        ));
+        
+        assertEquals(false, actualValue);
+    }
+    
+    @Test
+    public void testIntegerEqualWhenEqual() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -235235L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -235235L),
+            new Instruction(InstructionCode.INTEGER_EQUAL)
+        ));
+        
+        assertEquals(true, actualValue);
+    }
+    
+    @Test
+    public void testIntegerEqualWhenLess() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -2000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -100L),
+            new Instruction(InstructionCode.INTEGER_EQUAL)
+        ));
+        
+        assertEquals(false, actualValue);
+    }
+    
+    @Test
+    public void testIntegerNotEqualWhenGreater() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 2353525235235L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -100L),
+            new Instruction(InstructionCode.INTEGER_NOT_EQUAL)
+        ));
+        
+        assertEquals(true, actualValue);
+    }
+    
+    @Test
+    public void testIntegerNotEqualWhenEqual() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -235235L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -235235L),
+            new Instruction(InstructionCode.INTEGER_NOT_EQUAL)
+        ));
+        
+        assertEquals(false, actualValue);
+    }
+    
+    @Test
+    public void testIntegerNotEqualWhenLess() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -2000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -100L),
+            new Instruction(InstructionCode.INTEGER_NOT_EQUAL)
+        ));
+        
+        assertEquals(true, actualValue);
+    }
+    
+    @Test
+    public void testIntegerGreaterWhenGreater() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 2353525235235L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -100L),
+            new Instruction(InstructionCode.INTEGER_GREATER_THAN)
+        ));
+        
+        assertEquals(true, actualValue);
+    }
+    
+    @Test
+    public void testIntegerGreaterWhenEqual() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -235235L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -235235L),
+            new Instruction(InstructionCode.INTEGER_GREATER_THAN)
+        ));
+        
+        assertEquals(false, actualValue);
+    }
+    
+    @Test
+    public void testIntegerGreaterWhenLess() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -2000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -100L),
+            new Instruction(InstructionCode.INTEGER_GREATER_THAN)
+        ));
+        
+        assertEquals(false, actualValue);
+    }
+    
+    @Test
+    public void testIntegerLessWhenGreater() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 2353525235235L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -100L),
+            new Instruction(InstructionCode.INTEGER_LESS_THAN)
+        ));
+        
+        assertEquals(false, actualValue);
+    }
+    
+    @Test
+    public void testIntegerLessWhenEqual() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -235235L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -235235L),
+            new Instruction(InstructionCode.INTEGER_LESS_THAN)
+        ));
+        
+        assertEquals(false, actualValue);
+    }
+    
+    @Test
+    public void testIntegerLessWhenLess() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -2000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -100L),
+            new Instruction(InstructionCode.INTEGER_LESS_THAN)
+        ));
+        
+        assertEquals(true, actualValue);
+    }
+    
+    @Test
+    public void testIntegerGreaterEqualWhenGreater() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 2353525235235L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -100L),
+            new Instruction(InstructionCode.INTEGER_GREATER_EQUAL)
+        ));
+        
+        assertEquals(true, actualValue);
+    }
+    
+    @Test
+    public void testIntegerGreaterEqualWhenEqual() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -235235L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -235235L),
+            new Instruction(InstructionCode.INTEGER_GREATER_EQUAL)
+        ));
+        
+        assertEquals(true, actualValue);
+    }
+    
+    @Test
+    public void testIntegerGreaterEqualWhenLess() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -2000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -100L),
+            new Instruction(InstructionCode.INTEGER_GREATER_EQUAL)
+        ));
+        
+        assertEquals(false, actualValue);
+    }
+    
+    @Test
+    public void testIntegerLessEqualWhenGreater() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 2353525235235L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -100L),
+            new Instruction(InstructionCode.INTEGER_LESS_EQUAL)
+        ));
+        
+        assertEquals(false, actualValue);
+    }
+    
+    @Test
+    public void testIntegerLessEqualWhenEqual() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -235235L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -235235L),
+            new Instruction(InstructionCode.INTEGER_LESS_EQUAL)
+        ));
+        
+        assertEquals(true, actualValue);
+    }
+    
+    @Test
+    public void testIntegerLessEqualWhenLess() {
+        boolean actualValue = simpleIntTestBooleanResult(Arrays.asList(
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -2000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -100L),
+            new Instruction(InstructionCode.INTEGER_LESS_EQUAL)
+        ));
+        
+        assertEquals(true, actualValue);
     }
 }
