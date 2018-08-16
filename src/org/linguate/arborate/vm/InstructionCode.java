@@ -38,7 +38,15 @@ public enum InstructionCode {
     INTEGER_GREATER_EQUAL,
     INTEGER_LESS_EQUAL,
     
-    
+    // boolean operations
+    BOOLEAN_TO_STACK,
+    BOOLEAN_EQUAL,
+    BOOLEAN_NOT_EQUAL,
+    BOOLEAN_AND,
+    BOOLEAN_OR,
+    BOOLEAN_NOT,
+    BOOLEAN_XOR,
+        
     // function operations
     CALL_FUNCTION,
     EXIT_FUNCTION,

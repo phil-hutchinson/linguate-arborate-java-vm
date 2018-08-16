@@ -237,6 +237,61 @@ public class VirtualMachine {
                 }
                 break;
                 
+                case BOOLEAN_TO_STACK: {
+                    boolean val = (boolean) nextInstruction.getData();
+                    ArborateBoolean boolToPush = new ArborateBoolean(val) ;
+                    stack.push(boolToPush);
+                }
+                break;
+                
+                case BOOLEAN_EQUAL: {
+                    boolean op2 = popBoolean();
+                    boolean op1 = popBoolean();
+                    ArborateBoolean result = new ArborateBoolean(op1 == op2);
+                    stack.push(result);
+                }
+                break;
+                
+                case BOOLEAN_NOT_EQUAL: {
+                    boolean op2 = popBoolean();
+                    boolean op1 = popBoolean();
+                    ArborateBoolean result = new ArborateBoolean(op1 != op2);
+                    stack.push(result);
+                }
+                break;
+                
+                case BOOLEAN_AND: {
+                    boolean op2 = popBoolean();
+                    boolean op1 = popBoolean();
+                    ArborateBoolean result = new ArborateBoolean(op1 && op2);
+                    stack.push(result);
+                }
+                break;
+                
+                case BOOLEAN_OR: {
+                    boolean op2 = popBoolean();
+                    boolean op1 = popBoolean();
+                    ArborateBoolean result = new ArborateBoolean(op1 || op2);
+                    stack.push(result);
+                }
+                break;
+                
+                case BOOLEAN_NOT: {
+                    boolean op = popBoolean();
+                    ArborateBoolean result = new ArborateBoolean(!op);
+                    stack.push(result);
+                }
+                break;
+                
+                case BOOLEAN_XOR: {
+                    boolean op2 = popBoolean();
+                    boolean op1 = popBoolean();
+                    ArborateBoolean result = new ArborateBoolean(op1 ^ op2);
+                    stack.push(result);
+                }
+                break;
+                
+                
                 case CALL_FUNCTION: {
                     long functionIndex = (Long) nextInstruction.getData();
                     if (funcDefs.size() <= functionIndex) {
