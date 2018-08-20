@@ -19,4 +19,29 @@ public class ArborateString extends ArborateObject {
     public String getValue() {
         return value;
     }
+
+    // EQUALS / HASHCODE OVERRIDES
+    final static int CLASS_HASH = 24971;
+    final static int CLASS_HASH_OFFSET = 27541;
+    final static int NULL_HASH = 95009;
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        ArborateString other = (ArborateString) obj;
+
+        return (this.value == null ? other.value == null : this.value.equals(other.value));
+    }
+    
+    @Override
+    public int hashCode() {
+        return (value == null) ? NULL_HASH : (value.hashCode() + CLASS_HASH_OFFSET) * CLASS_HASH;
+    }
+    
 }
