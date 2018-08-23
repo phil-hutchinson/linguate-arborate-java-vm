@@ -56,7 +56,7 @@ public class VirtualMachineBaselineTest {
         
         instructions.add(new Instruction(InstructionCode.INTEGER_SUBTRACT));
         
-        List<BaseType> inParams = new ArrayList();
+        List<BaseType> inParams = new ArrayList<>();
         List<BaseType> outParams = Arrays.asList(BaseType.INTEGER);
         FunctionDefinition mainFunc = new FunctionDefinition(instructions, 1, inParams, outParams);
         List<FunctionDefinition> allFuncs = new ArrayList<>();
@@ -78,14 +78,14 @@ public class VirtualMachineBaselineTest {
         mainInstructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 30L));
         mainInstructions.add(new Instruction(InstructionCode.CALL_FUNCTION, 1L));
         mainInstructions.add(new Instruction(InstructionCode.INTEGER_ADD));
-        List<BaseType> mainInParams = new ArrayList();
+        List<BaseType> mainInParams = new ArrayList<>();
         List<BaseType> mainOutParams = Arrays.asList(BaseType.INTEGER);
         FunctionDefinition mainFunc = new FunctionDefinition(mainInstructions, 0, mainInParams, mainOutParams);
         
         ArrayList<Instruction> subInstructions = new ArrayList<>();
         subInstructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 5L));
         subInstructions.add(new Instruction(InstructionCode.INTEGER_SUBTRACT));
-        List<BaseType> subInParams = new ArrayList();
+        List<BaseType> subInParams = new ArrayList<>();
         List<BaseType> subOutParams = Arrays.asList(BaseType.INTEGER);
         FunctionDefinition subFunc = new FunctionDefinition(subInstructions, 0, subInParams, subOutParams);
         
@@ -98,7 +98,7 @@ public class VirtualMachineBaselineTest {
         List<Object> actualValue = virtualMachine.execute();
         assertEquals(1, actualValue.size());
         ArborateInteger actual = (ArborateInteger) actualValue.get(0);
-        assertEquals(40L, actual.getValue());
+        assertEquals(40L, actual.getValue()); 
     }
 
     @Test
@@ -176,7 +176,7 @@ public class VirtualMachineBaselineTest {
         mainInstructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 20L));
         mainInstructions.add(new Instruction(InstructionCode.CALL_FUNCTION, 1L));
         mainInstructions.add(new Instruction(InstructionCode.INTEGER_SUBTRACT));
-        List<BaseType> mainInParams = new ArrayList();
+        List<BaseType> mainInParams = new ArrayList<>();
         List<BaseType> mainOutParams = Arrays.asList(BaseType.INTEGER);
         FunctionDefinition mainFunc = new FunctionDefinition(mainInstructions, 0, mainInParams, mainOutParams);
         
@@ -188,7 +188,7 @@ public class VirtualMachineBaselineTest {
         subInstructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 7L));
         subInstructions.add(new Instruction(InstructionCode.VARIABLE_TO_STACK, 0L));
         subInstructions.add(new Instruction(InstructionCode.INTEGER_ADD));
-        List<BaseType> subInParams = new ArrayList();
+        List<BaseType> subInParams = new ArrayList<>();
         List<BaseType> subOutParams = Arrays.asList(BaseType.INTEGER, BaseType.INTEGER);
         FunctionDefinition subFunc = new FunctionDefinition(subInstructions, 1, subInParams, subOutParams);
         
@@ -234,7 +234,7 @@ public class VirtualMachineBaselineTest {
         ArrayList<Instruction> mainInstructions = new ArrayList<>();
         mainInstructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 30L));
         mainInstructions.add(new Instruction(InstructionCode.CALL_FUNCTION, 1L));
-        List<BaseType> mainInParams = new ArrayList();
+        List<BaseType> mainInParams = new ArrayList<>();
         List<BaseType> mainOutParams = Arrays.asList(BaseType.INTEGER);
         FunctionDefinition mainFunc = new FunctionDefinition(mainInstructions, 0, mainInParams, mainOutParams);
         
@@ -249,7 +249,7 @@ public class VirtualMachineBaselineTest {
         subInstructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 7L));
         subInstructions.add(new Instruction(InstructionCode.VARIABLE_TO_STACK, 0));
         subInstructions.add(new Instruction(InstructionCode.INTEGER_ADD));
-        List<BaseType> subInParams = new ArrayList();
+        List<BaseType> subInParams = new ArrayList<>();
         List<BaseType> subOutParams = Arrays.asList(BaseType.INTEGER, BaseType.INTEGER);
         FunctionDefinition subFunc = new FunctionDefinition(subInstructions, 1, subInParams, subOutParams);
         
