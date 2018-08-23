@@ -14,10 +14,10 @@ import java.util.Map;
  * @author Phil Hutchinson
  */
 public class ArborateMap extends ArborateObject {
-    private HashMap<ArborateObject, ArborateObject> items;
-    private ArborateMap parent;
-    private int itemCount;
-    private int internalHashCode;
+    HashMap<ArborateObject, ArborateObject> items;
+    ArborateMap parent;
+    int itemCount;
+    int internalHashCode;
     
     public ArborateMap() {
         items = new HashMap<>();
@@ -100,6 +100,10 @@ public class ArborateMap extends ArborateObject {
         }
     }
     
+    public int getSize() {
+        return itemCount;
+    }
+    
     private void mergeUp() {
         while (parent != null && parent.items.size() <= items.size()) {
             parent.items.entrySet().stream().forEach((entry) -> {
@@ -137,61 +141,42 @@ public class ArborateMap extends ArborateObject {
 
         ArborateMap other = (ArborateMap) obj;
         
-        if (itemCount != other.itemCount) {
-            return false;
-        }
-        
         return compareToMap(other);
     }
     
     private boolean compareToMap(ArborateMap other) {
-        final ArborateMap commonParent = findCommonParent(other);
-        
-        ArborateMap thisWorking = this;
-        HashSet<ArborateObject> processed = new HashSet<>();
-        while (thisWorking != commonParent) {
-            for (Map.Entry<ArborateObject, ArborateObject> thisEntry: thisWorking.items.entrySet()) {
-                ArborateObject thisKey = thisEntry.getKey();
-                if (!processed.contains(thisKey)) {
-                    ArborateMap otherWorking = other;
-                    boolean found = false;
-                    while (!found && otherWorking != commonParent) {
-                        if (otherWorking.items.containsKey(thisKey)) {
-                            found = true;
-                            ArborateObject thisValue = thisEntry.getValue();
-                            ArborateObject otherValue = otherWorking.items.get(thisKey);
-                            if (!thisValue.equals(otherValue)) {
-                                return false;
-                            } else {
-                                processed.add(thisKey);
-                            }
-                        }
-                        otherWorking = otherWorking.parent;
-                    }
-                    if (!found) {
-                        return false;
-                    }
-                }
-            }
-            thisWorking = thisWorking.parent;
+        if (itemCount != other.itemCount) {
+            return false;
         }
-        return true;
+        
+        HashMap<ArborateObject, ArborateObject> packedItems = getPackedItems();
+        
+        boolean isSame = packedItems.entrySet().stream().allMatch(e -> 
+            other.get(e.getKey()).equals(e.getValue())
+        );
+                
+        return isSame;
     }
 
-    private ArborateMap findCommonParent(ArborateMap other) {
-        ArborateMap workingCommonParent = null;
-        ArborateMap thisParent = parent;
-        while (thisParent != null && workingCommonParent == null) {
-            ArborateMap otherParent = other.parent;
-            while (otherParent != null && workingCommonParent == null) {
-                if (thisParent == otherParent) {
-                    workingCommonParent = otherParent;
+    private HashMap<ArborateObject, ArborateObject> getPackedItems() {
+        HashMap<ArborateObject, ArborateObject> returnValue = new HashMap<>();
+        HashSet<ArborateObject> keysAlreadyEncountered = new HashSet<>();
+        
+        ArborateMap current = this;
+        while (current != null) {
+            for (ArborateObject key: current.items.keySet()) {
+                if (!keysAlreadyEncountered.contains(key)) {
+                    keysAlreadyEncountered.add(key);
+                    ArborateObject value = current.items.get(key);
+                    if (value != ArborateNonItem.get()) {
+                        returnValue.put(key, value);
+                    }
                 }
-                otherParent = otherParent.parent;
             }
-            thisParent = this.parent;
+            current = current.parent;
         }
-        return workingCommonParent;
+        
+        return returnValue;
     }
     
     @Override
