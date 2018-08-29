@@ -145,7 +145,7 @@ public class ArborateMap extends ArborateObject {
     }
     
     private boolean compareToMap(ArborateMap other) {
-        if (itemCount != other.itemCount) {
+        if (itemCount != other.itemCount || internalHashCode != other.internalHashCode) {
             return false;
         }
         

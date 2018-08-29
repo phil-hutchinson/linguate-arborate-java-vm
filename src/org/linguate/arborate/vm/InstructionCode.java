@@ -38,6 +38,16 @@ public enum InstructionCode {
     INTEGER_GREATER_EQUAL,
     INTEGER_LESS_EQUAL,
     
+    // map operations
+    MAP_EMPTY_TO_STACK,
+    MAP_HAS,
+    MAP_GET,
+    MAP_SET,
+    MAP_CLEAR,
+    MAP_EQUAL,
+    MAP_NOT_EQUAL,
+    MAP_SIZE,
+    
     // boolean operations
     BOOLEAN_TO_STACK,
     BOOLEAN_EQUAL,

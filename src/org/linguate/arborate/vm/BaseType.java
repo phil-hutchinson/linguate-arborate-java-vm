@@ -11,6 +11,7 @@ package org.linguate.arborate.vm;
  */
 public enum BaseType {
     NULL,
+    OBJECT,
     INTEGER,
     STRING,
     BOOLEAN,

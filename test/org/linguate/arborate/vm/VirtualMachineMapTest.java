@@ -41,6 +41,22 @@ public class VirtualMachineMapTest {
     public void tearDown() {
     }
 
+    private ArborateObject simpleMapTest(List<Instruction> instructions) {
+        return simpleMapTest(instructions, 0);
+    }
+
+    private ArborateObject simpleMapTest(List<Instruction> instructions, int numVariables) {
+        FunctionDefinition mainFunc = new FunctionDefinition(instructions, numVariables, Arrays.asList(), Arrays.asList(BaseType.OBJECT));
+        
+        VirtualMachine virtualMachine = new VirtualMachine(Arrays.asList(mainFunc));
+        
+        List<Object> actualValue = virtualMachine.execute();
+        assertEquals(1, actualValue.size());
+        ArborateObject result = (ArborateObject) actualValue.get(0);
+        return result;
+    }
+    
+    
     @Test
     public void testObjectCreate() {
         ArborateMap testMap = new ArborateMap();
@@ -300,9 +316,345 @@ public class VirtualMachineMapTest {
         assertEquals(null, map3.get(foo));
         assertEquals(foo, map4.get(foo));
         assertEquals(map4, map5.get(new ArborateString("in")));
-        
-        
     }
     
+    @Test
+    public void testMapOperationEmptyToStack() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK)
+        ));
+        
+        assertEquals(new ArborateMap(), actualValue);
+        
+    }
+
+    @Test
+    public void testMapOperationHasExists() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 50L),
+            new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 50L),
+            new Instruction(InstructionCode.MAP_HAS)
+        ));
+        
+        assertEquals(true, ((ArborateBoolean)actualValue).value);
+    }
+
+    @Test
+    public void testMapOperationHasDoesNotExist() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 50L),
+            new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 100L),
+            new Instruction(InstructionCode.MAP_HAS)
+        ));
+        
+        assertEquals(false, ((ArborateBoolean)actualValue).getValue());
+    }
+
+    @Test
+    public void testMapOperationGetExists() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 50L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1234L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 50L),
+            new Instruction(InstructionCode.MAP_GET)
+        ));
+        
+        assertEquals(1234L, ((ArborateInteger)actualValue).getValue());
+    }
+
+    @Test
+    public void testMapOperationGetDoesNotExist() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 50L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1234L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 100L),
+            new Instruction(InstructionCode.MAP_GET)
+        ));
+        
+        assertEquals(null, actualValue);
+    }
     
+    @Test
+    public void testMapOperationSet() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -123L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 654321L),
+            new Instruction(InstructionCode.MAP_SET)
+        ));
+        
+        ArborateMap actualMap = (ArborateMap) actualValue;
+        
+        assertEquals(1, actualMap.getSize());
+        ArborateInteger actualInteger = (ArborateInteger) actualMap.get(new ArborateInteger(-123L));
+        assertEquals(654321L, actualInteger.getValue());
+    }
+    
+    @Test
+    public void testMapOperationSetTwice() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -123L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 654321L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -123L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 2L),
+            new Instruction(InstructionCode.MAP_SET)
+        ));
+        
+        ArborateMap actualMap = (ArborateMap) actualValue;
+        
+        assertEquals(1, actualMap.getSize());
+        ArborateInteger actualInteger = (ArborateInteger) actualMap.get(new ArborateInteger(-123L));
+        assertEquals(2L, actualInteger.getValue());
+    }
+    
+    @Test
+    public void testMapOperationSetImmutable() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 999L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 10L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.STACK_TO_VARIABLE, 0L),
+            new Instruction(InstructionCode.VARIABLE_TO_STACK, 0L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 999L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 2623L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.STACK_TO_VARIABLE, 1L),
+            new Instruction(InstructionCode.VARIABLE_TO_STACK, 0L)
+        ), 2);
+        
+        ArborateMap actualMap = (ArborateMap) actualValue;
+        
+        assertEquals(1, actualMap.getSize());
+        ArborateInteger actualInteger = (ArborateInteger) actualMap.get(new ArborateInteger(999L));
+        assertEquals(10L, actualInteger.getValue());
+    }
+    
+    @Test
+    public void testMapOperationClear() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -123L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 654321L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, -123L),
+            new Instruction(InstructionCode.MAP_CLEAR)
+        ));
+        
+        ArborateMap actualMap = (ArborateMap) actualValue;
+        
+        assertEquals(0, actualMap.getSize());
+        assertEquals(null, actualMap.get(new ArborateInteger(-123L)));
+    }
+    
+    @Test
+    public void testMapOperationClearImmutable() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 999L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 44L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.STACK_TO_VARIABLE, 0L),
+            new Instruction(InstructionCode.VARIABLE_TO_STACK, 0L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 999L),
+            new Instruction(InstructionCode.MAP_CLEAR),
+            new Instruction(InstructionCode.STACK_TO_VARIABLE, 1L),
+            new Instruction(InstructionCode.VARIABLE_TO_STACK, 0L)
+        ), 2);
+        
+        ArborateMap actualMap = (ArborateMap) actualValue;
+        
+        assertEquals(1, actualMap.getSize());
+        ArborateInteger actualInteger = (ArborateInteger) actualMap.get(new ArborateInteger(999L));
+        assertEquals(44L, actualInteger.getValue());
+    }
+    
+    @Test
+    public void testMapOperationEqualWhenEqual() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 500L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
+            new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
+            new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 500L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.MAP_EQUAL)
+        ));
+        
+        ArborateBoolean actualBoolean = (ArborateBoolean) actualValue;
+        
+        assertEquals(true, actualBoolean.getValue());
+    }
+    
+    @Test
+    public void testMapOperationNotEqualWhenNotEqual() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 500L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
+            new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
+            new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.MAP_EQUAL)
+        ));
+        
+        ArborateBoolean actualBoolean = (ArborateBoolean) actualValue;
+        
+        assertEquals(false, actualBoolean.getValue());
+    }
+    
+    @Test
+    public void testMapOperationNotEqualWhenEqual() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 500L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
+            new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
+            new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 500L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.MAP_NOT_EQUAL)
+        ));
+        
+        ArborateBoolean actualBoolean = (ArborateBoolean) actualValue;
+        
+        assertEquals(false, actualBoolean.getValue());
+    }
+    
+    @Test
+    public void testMapOperationEqualWhenNotEqual() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 500L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
+            new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
+            new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.MAP_NOT_EQUAL)
+        ));
+        
+        ArborateBoolean actualBoolean = (ArborateBoolean) actualValue;
+        
+        assertEquals(true, actualBoolean.getValue());
+    }
+    
+    @Test
+    public void testMapOperationSizeWhenEmpty() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_SIZE)
+        ));
+        
+        ArborateInteger actualInteger = (ArborateInteger) actualValue;
+        
+        assertEquals(0L, actualInteger.getValue());
+    }
+
+    @Test
+    public void testMapOperationSizeWithItems() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 250L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 2000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 10L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 3000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 250L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 4000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 255L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.MAP_SIZE)
+        ));
+        
+        ArborateInteger actualInteger = (ArborateInteger) actualValue;
+        
+        assertEquals(4L, actualInteger.getValue());
+    }
+
+    @Test
+    public void testMapOperationSizeWithOverwrites() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 250L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 2000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 10L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 250L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 2000L),
+            new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.MAP_SIZE)
+        ));
+        
+        ArborateInteger actualInteger = (ArborateInteger) actualValue;
+        
+        assertEquals(2L, actualInteger.getValue());
+    }
+
+    @Test
+    public void testMapOperationSizeWithClear() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 250L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 2000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 10L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 3000L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 250L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 2000L),
+            new Instruction(InstructionCode.MAP_CLEAR),
+            new Instruction(InstructionCode.MAP_SIZE)
+        ));
+        
+        ArborateInteger actualInteger = (ArborateInteger) actualValue;
+        
+        assertEquals(2L, actualInteger.getValue());
+    }
 }

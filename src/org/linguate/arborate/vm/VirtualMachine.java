@@ -291,6 +291,67 @@ public class VirtualMachine {
                 }
                 break;
                 
+                case MAP_EMPTY_TO_STACK: {
+                    ArborateMap newMap = new ArborateMap();
+                    stack.push(newMap);
+                }
+                break;
+                
+                case MAP_HAS: {
+                    ArborateObject op2 = popObject();
+                    ArborateMap op1 = popMap();
+                    ArborateBoolean result = new ArborateBoolean(op1.has(op2));
+                    stack.push(result);
+                }
+                break;
+                
+                case MAP_GET: {
+                    ArborateObject op2 = popObject();
+                    ArborateMap op1 = popMap();
+                    ArborateObject result = op1.get(op2);
+                    stack.push(result);
+                }
+                break;
+                
+                case MAP_SET: {
+                    ArborateObject op3 = popObject();
+                    ArborateObject op2 = popObject();
+                    ArborateMap op1 = popMap();
+                    ArborateMap result = op1.set(op2, op3);
+                    stack.push(result);
+                }
+                break;
+                
+                case MAP_CLEAR: {
+                    ArborateObject op2 = popObject();
+                    ArborateMap op1 = popMap();
+                    ArborateMap result = op1.clear(op2);
+                    stack.push(result);
+                }
+                break;
+                
+                case MAP_EQUAL: {
+                    ArborateMap op2 = popMap();
+                    ArborateMap op1 = popMap();
+                    ArborateBoolean result = new ArborateBoolean(op1.equals(op2));
+                    stack.push(result);
+                }
+                break;
+                
+                case MAP_NOT_EQUAL: {
+                    ArborateMap op2 = popMap();
+                    ArborateMap op1 = popMap();
+                    ArborateBoolean result = new ArborateBoolean(!op1.equals(op2));
+                    stack.push(result);
+                }
+                break;
+                
+                case MAP_SIZE: {
+                    ArborateMap op1 = popMap();
+                    ArborateInteger result = new ArborateInteger((long)op1.getSize());
+                    stack.push(result);
+                }
+                break;
                 
                 case CALL_FUNCTION: {
                     long functionIndex = (Long) nextInstruction.getData();
@@ -446,6 +507,16 @@ public class VirtualMachine {
                 case NULL:
                     throw new VirtualMachineExecutionException("Function argument type cannot be NULL.");
                     
+                case OBJECT:
+                    if (currParam == null || currParam instanceof ArborateObject) {
+                        returnValue.add(currParam);
+                    } else {
+                        throw new IllegalArgumentException("Stack item is not appropriate type for function result.");
+                    }
+                    break;
+                    
+                    
+                    
                 case INTEGER:
                     if (currParam instanceof ArborateInteger) {
                         returnValue.add(currParam);
@@ -489,6 +560,11 @@ public class VirtualMachine {
         return returnValue;
     }
 
+    private ArborateObject popObject() {
+        ArborateObject stackItem = stack.pop();
+        return stackItem;
+    }
+
     private long popInteger() {
         ArborateObject stackItem = stack.pop();
         if (!(stackItem instanceof ArborateInteger)) {
@@ -500,8 +576,16 @@ public class VirtualMachine {
     private boolean popBoolean() {
         ArborateObject stackItem = stack.pop();
         if (!(stackItem instanceof ArborateBoolean)) {
-            throw new VirtualMachineExecutionException("Stack item was not expected type (integer)");
+            throw new VirtualMachineExecutionException("Stack item was not expected type (boolean)");
         }
         return ((ArborateBoolean)stackItem).getValue();
+    }
+    
+    private ArborateMap popMap() {
+        ArborateObject stackItem = stack.pop();
+        if (!(stackItem instanceof ArborateMap)) {
+            throw new VirtualMachineExecutionException("Stack item was not expected type (map)");
+        }
+        return (ArborateMap)stackItem;
     }
 }
