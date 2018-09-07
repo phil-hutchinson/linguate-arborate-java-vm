@@ -38,6 +38,15 @@ public enum InstructionCode {
     INTEGER_GREATER_EQUAL,
     INTEGER_LESS_EQUAL,
     
+    // string operations
+    STRING_TO_STACK,
+    STRING_LENGTH,
+    STRING_SUBSTRING,
+    STRING_CONCATENATE,
+    STRING_FIND,
+    STRING_EQUAL,
+    STRING_NOT_EQUAL,
+    
     // map operations
     MAP_EMPTY_TO_STACK,
     MAP_HAS,

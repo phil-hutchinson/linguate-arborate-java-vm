@@ -35,6 +35,10 @@ public class ArborateString extends ArborateObject {
         }
 
         ArborateString other = (ArborateString) obj;
+        
+        if (this.hashCode() != other.hashCode()) {
+            return false;
+        }
 
         return (this.value == null ? other.value == null : this.value.equals(other.value));
     }

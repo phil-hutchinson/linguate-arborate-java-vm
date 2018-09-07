@@ -291,6 +291,74 @@ public class VirtualMachine {
                 }
                 break;
                 
+                case STRING_TO_STACK: {
+                    String val = (String) nextInstruction.getData();
+                    ArborateString stringToPush = new ArborateString(val) ;
+                    stack.push(stringToPush);
+                }
+                break;
+                
+                case STRING_LENGTH: {
+                    String op1 = popString();
+                    ArborateInteger result = new ArborateInteger((long)op1.length());
+                    stack.push(result);
+                }
+                break;
+                
+                case STRING_SUBSTRING: {
+                    long op3 = popInteger();
+                    long op2 = popInteger();
+                    String op1 = popString();
+                    int len = op1.length();
+                    if (op2 < 0 || op3 < 0 || len < op2 ) {
+                        stack.push(null);
+                    } else {
+                        int endPos = Math.min((int)(op2 + op3), len);
+                        String result = op1.substring((int)op2, endPos);
+                        stack.push(new ArborateString(result));
+                    }
+                }
+                break;
+                
+                case STRING_CONCATENATE: {
+                    String op2 = popString();
+                    String op1 = popString();
+                    String result = op1.concat(op2);
+                    stack.push(new ArborateString(result));
+                }
+                break;
+                
+                case STRING_FIND: {
+                    int op3 = (int) popInteger();
+                    String op2 = popString();
+                    String op1 = popString();
+                    int len = op1.length();
+                    if (op3 < 0) {
+                        stack.push(new ArborateInteger(-1L));
+                    } else {
+                        long pos = (long) op1.indexOf(op2, op3);
+                        stack.push(new ArborateInteger(pos));
+                    }
+                }
+                break;
+                
+                case STRING_EQUAL: {
+                    String op2 = popString();
+                    String op1 = popString();
+                    ArborateBoolean result = new ArborateBoolean(op1.equals(op2));
+                    stack.push(result);
+                }
+                break;
+                
+                case STRING_NOT_EQUAL: {
+                    String op2 = popString();
+                    String op1 = popString();
+                    ArborateBoolean result = new ArborateBoolean(!op1.equals(op2));
+                    stack.push(result);
+                }
+                break;
+                
+                
                 case MAP_EMPTY_TO_STACK: {
                     ArborateMap newMap = new ArborateMap();
                     stack.push(newMap);
@@ -581,6 +649,14 @@ public class VirtualMachine {
         return ((ArborateBoolean)stackItem).getValue();
     }
     
+    private String popString() {
+        ArborateObject stackItem = stack.pop();
+        if (!(stackItem instanceof ArborateString)) {
+            throw new VirtualMachineExecutionException("Stack item was not expected type (integer)");
+        }
+        return ((ArborateString)stackItem).getValue();
+    }
+
     private ArborateMap popMap() {
         ArborateObject stackItem = stack.pop();
         if (!(stackItem instanceof ArborateMap)) {
