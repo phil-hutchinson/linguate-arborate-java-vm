@@ -45,9 +45,13 @@ public class VirtualMachine {
 
         return new FunctionInstance(definition, localVars);
     }
-            
+    
     public List<Object> execute(Object ...args) {
-        FunctionDefinition startDef = funcDefs.get(0);
+        return executeByNumber(0, args);
+    }
+            
+    public List<Object> executeByNumber(int funcNumber, Object ...args) {
+        FunctionDefinition startDef = funcDefs.get(funcNumber);
         PrepareArguments(startDef, args);
         
         currentFunction = getFunctionInstance(startDef);

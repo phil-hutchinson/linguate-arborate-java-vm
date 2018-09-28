@@ -441,4 +441,34 @@ public class VirtualMachineBaselineTest {
         ArborateInteger actual = (ArborateInteger) actualValue.get(0);
         assertEquals(243L, actual.getValue());
     }
+
+    @Test
+    public void testCallFunctionByNumber() {
+        ArrayList<Instruction> firstInstructions = new ArrayList<>();
+        firstInstructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 20L));
+        firstInstructions.add(new Instruction(InstructionCode.INTEGER_ADD));
+        List<BaseType> firstInParams = new ArrayList<>();
+        List<BaseType> firstOutParams = Arrays.asList(BaseType.INTEGER);
+        FunctionDefinition firstFunc = new FunctionDefinition(firstInstructions, 0, firstInParams, firstOutParams);
+        
+        ArrayList<Instruction> secondInstructions = new ArrayList<>();
+        secondInstructions.add(new Instruction(InstructionCode.CALL_FUNCTION, 0L));
+        secondInstructions.add(new Instruction(InstructionCode.INTEGER_TO_STACK, 5L));
+        secondInstructions.add(new Instruction(InstructionCode.INTEGER_MULTIPLY));
+        List<BaseType> secondInParams = Arrays.asList(BaseType.INTEGER);
+        List<BaseType> secondOutParams = Arrays.asList(BaseType.INTEGER);
+        FunctionDefinition secondFunc = new FunctionDefinition(secondInstructions, 0, secondInParams, secondOutParams);
+        
+        List<FunctionDefinition> allFuncs = new ArrayList<>();
+        allFuncs.add(firstFunc);
+        allFuncs.add(secondFunc);
+        
+        VirtualMachine virtualMachine = new VirtualMachine(allFuncs);
+        
+        List<Object> actualValue = virtualMachine.executeByNumber(1, 10L);
+        assertEquals(1, actualValue.size());
+        ArborateInteger actual = (ArborateInteger) actualValue.get(0);
+        assertEquals(150L, actual.getValue()); 
+    }
+
 }
