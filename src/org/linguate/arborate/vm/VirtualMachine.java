@@ -315,7 +315,7 @@ public class VirtualMachine {
                     String op1 = popString();
                     int len = op1.length();
                     if (op2 < 0 || op3 < 0 || len < op2 ) {
-                        stack.push(null);
+                        stack.push(new ArborateString(""));
                     } else {
                         int endPos = Math.min((int)(op2 + op3), len);
                         String result = op1.substring((int)op2, endPos);
