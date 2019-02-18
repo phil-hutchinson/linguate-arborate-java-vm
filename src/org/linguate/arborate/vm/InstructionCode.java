@@ -57,6 +57,16 @@ public enum InstructionCode {
     MAP_NOT_EQUAL,
     MAP_SIZE,
     
+    // list operators
+    LIST_EMPTY_TO_STACK,
+    LIST_GET_POSITION,
+    LIST_SET_POSITION,
+    LIST_INSERT_POSITION,
+    LIST_REMOVE_POSITION,
+    LIST_EQUAL,
+    LIST_NOT_EQUAL,
+    LIST_SIZE,
+    
     // boolean operations
     BOOLEAN_TO_STACK,
     BOOLEAN_EQUAL,

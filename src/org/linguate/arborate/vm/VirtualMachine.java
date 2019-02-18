@@ -656,7 +656,7 @@ public class VirtualMachine {
     private String popString() {
         ArborateObject stackItem = stack.pop();
         if (!(stackItem instanceof ArborateString)) {
-            throw new VirtualMachineExecutionException("Stack item was not expected type (integer)");
+            throw new VirtualMachineExecutionException("Stack item was not expected type (string)");
         }
         return ((ArborateString)stackItem).getValue();
     }
