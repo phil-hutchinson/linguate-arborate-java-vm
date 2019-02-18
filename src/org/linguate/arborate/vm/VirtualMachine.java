@@ -425,6 +425,65 @@ public class VirtualMachine {
                 }
                 break;
                 
+                case LIST_EMPTY_TO_STACK: {
+                    ArborateList newList = new ArborateList();
+                    stack.push(newList);
+                }
+                
+                break;
+                
+                case LIST_GET_POSITION: {
+                    int op2 = (int) popInteger();
+                    ArborateList op1 = popList();
+                    ArborateObject result = op1.getPosition(op2);
+                    stack.push(result);
+                }
+                break;
+                
+                case LIST_SET_POSITION: {
+                    ArborateObject op3 = popObject();
+                    int op2 = (int) popInteger();
+                    ArborateList op1 = popList();
+                    ArborateList result = op1.setPosition(op2, op3);
+                    stack.push(result);
+                }
+                break;
+                
+                case LIST_INSERT_POSITION: {
+                    ArborateObject op3 = popObject();
+                    int op2 = (int) popInteger();
+                    ArborateList op1 = popList();
+                    ArborateList result = op1.insertPosition(op2, op3);
+                    stack.push(result);
+                }
+                break;
+                
+                case LIST_REMOVE_POSITION: {
+                    int op2 = (int) popInteger();
+                    ArborateList op1 = popList();
+                    ArborateList result = op1.removePosition(op2);
+                    stack.push(result);
+                }
+                break;
+                
+//                case LIST_EQUAL: {
+//                    
+//                }
+//                break;
+//                
+//                case LIST_NOT_EQUAL: {
+//                    
+//                }
+//                break;
+                
+                case LIST_SIZE: {
+                    ArborateList op1 = popList();
+                    long result = op1.getSize();
+                    stack.push(new ArborateInteger(result));
+                }
+                break;
+                
+                
                 case CALL_FUNCTION: {
                     long functionIndex = (Long) nextInstruction.getData();
                     if (funcDefs.size() <= functionIndex) {
@@ -667,5 +726,13 @@ public class VirtualMachine {
             throw new VirtualMachineExecutionException("Stack item was not expected type (map)");
         }
         return (ArborateMap)stackItem;
+    }
+
+    private ArborateList popList() {
+        ArborateObject stackItem = stack.pop();
+        if (!(stackItem instanceof ArborateList)) {
+            throw new VirtualMachineExecutionException("Stack item was not expected type (list)");
+        }
+        return (ArborateList)stackItem;
     }
 }
