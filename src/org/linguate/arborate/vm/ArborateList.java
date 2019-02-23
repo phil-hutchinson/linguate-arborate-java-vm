@@ -77,7 +77,9 @@ public class ArborateList extends ArborateObject {
         } else if (pos == 0) {
             // remove from start
             ArborateObject newItems[] = new ArborateObject[items.length - 1];
-            System.arraycopy(items, 1, newItems, 0, items.length);
+            if (items.length > 1) {
+                System.arraycopy(items, 1, newItems, 0, items.length);
+            }
             return new ArborateList(newItems);
         } else if (pos < items.length - 1) {
             // remove from middle
