@@ -71,7 +71,7 @@ public class ArborateList extends ArborateObject {
         
         
         if (pos > 0) {
-            System.arraycopy(items, 0, newItems, 0, items.length);
+            System.arraycopy(items, 0, newItems, 0, items.length - 1);
         } 
         
         if (pos < items.length - 1) {

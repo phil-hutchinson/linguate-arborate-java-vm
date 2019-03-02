@@ -56,7 +56,6 @@ public class VirtualMachineMapTest {
         return result;
     }
     
-    
     @Test
     public void testObjectCreate() {
         ArborateMap testMap = new ArborateMap();
