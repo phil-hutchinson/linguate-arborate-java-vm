@@ -656,4 +656,21 @@ public class VirtualMachineMapTest {
         
         assertEquals(2L, actualInteger.getValue());
     }
+    
+    @Test
+    public void testMapReturnedFromFunction() {
+        ArborateObject actualValue = simpleMapTest(Arrays.asList(
+            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 10L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 20L),
+            new Instruction(InstructionCode.MAP_SET),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 40L),
+            new Instruction(InstructionCode.INTEGER_TO_STACK, 80L),
+            new Instruction(InstructionCode.MAP_SET)
+        ));
+    
+        ArborateMap actualMap = (ArborateMap) actualValue;
+        
+        assertEquals(2L, actualMap.getSize());
+    }
 }

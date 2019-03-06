@@ -681,6 +681,15 @@ public class VirtualMachine {
                         throw new IllegalArgumentException("Stack item is not appropriate type for function result.");
                     }
                     break;
+                
+                case DICTIONARY:
+                    if (currParam instanceof ArborateMap) {
+                        returnValue.add(currParam);
+                    } else {
+                        throw new IllegalArgumentException("Stack item is not appropriate type for function result.");
+                    }
+                    break;
+                    
                     
                 default:
                     throw new IllegalArgumentException("Argument of unknown type.");
