@@ -41,6 +41,10 @@ public class VirtualMachineMapTest {
     public void tearDown() {
     }
 
+    private ArborateMap emptyMap() {
+        return new ArborateMap();
+    }
+    
     private ArborateObject simpleMapTest(List<Instruction> instructions) {
         return simpleMapTest(instructions, 0);
     }
@@ -320,7 +324,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationEmptyToStack() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK)
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap())
         ));
         
         assertEquals(new ArborateMap(), actualValue);
@@ -330,7 +334,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationHasExists() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 50L),
             new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
             new Instruction(InstructionCode.MAP_SET),
@@ -344,7 +348,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationHasDoesNotExist() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 50L),
             new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
             new Instruction(InstructionCode.MAP_SET),
@@ -358,7 +362,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationGetExists() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 50L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1234L),
             new Instruction(InstructionCode.MAP_SET),
@@ -372,7 +376,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationGetDoesNotExist() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 50L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1234L),
             new Instruction(InstructionCode.MAP_SET),
@@ -386,7 +390,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationSet() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, -123L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 654321L),
             new Instruction(InstructionCode.MAP_SET)
@@ -402,7 +406,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationSetTwice() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, -123L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 654321L),
             new Instruction(InstructionCode.MAP_SET),
@@ -421,7 +425,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationSetImmutable() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 999L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 10L),
             new Instruction(InstructionCode.MAP_SET),
@@ -444,7 +448,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationClear() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, -123L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 654321L),
             new Instruction(InstructionCode.MAP_SET),
@@ -461,7 +465,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationClearImmutable() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 999L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 44L),
             new Instruction(InstructionCode.MAP_SET),
@@ -483,14 +487,14 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationEqualWhenEqual() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 500L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1L),
             new Instruction(InstructionCode.MAP_SET),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
             new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
             new Instruction(InstructionCode.MAP_SET),
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
             new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
             new Instruction(InstructionCode.MAP_SET),
@@ -508,14 +512,14 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationNotEqualWhenNotEqual() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 500L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1L),
             new Instruction(InstructionCode.MAP_SET),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
             new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
             new Instruction(InstructionCode.MAP_SET),
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
             new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
             new Instruction(InstructionCode.MAP_SET),
@@ -530,14 +534,14 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationNotEqualWhenEqual() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 500L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1L),
             new Instruction(InstructionCode.MAP_SET),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
             new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
             new Instruction(InstructionCode.MAP_SET),
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
             new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
             new Instruction(InstructionCode.MAP_SET),
@@ -555,14 +559,14 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationEqualWhenNotEqual() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 500L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1L),
             new Instruction(InstructionCode.MAP_SET),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
             new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
             new Instruction(InstructionCode.MAP_SET),
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
             new Instruction(InstructionCode.BOOLEAN_TO_STACK, true),
             new Instruction(InstructionCode.MAP_SET),
@@ -577,7 +581,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationSizeWhenEmpty() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.MAP_SIZE)
         ));
         
@@ -589,7 +593,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationSizeWithItems() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 250L),
             new Instruction(InstructionCode.MAP_SET),
@@ -613,7 +617,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationSizeWithOverwrites() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 250L),
             new Instruction(InstructionCode.MAP_SET),
@@ -637,7 +641,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapOperationSizeWithClear() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 1000L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 250L),
             new Instruction(InstructionCode.MAP_SET),
@@ -660,7 +664,7 @@ public class VirtualMachineMapTest {
     @Test
     public void testMapReturnedFromFunction() {
         ArborateObject actualValue = simpleMapTest(Arrays.asList(
-            new Instruction(InstructionCode.MAP_EMPTY_TO_STACK),
+            new Instruction(InstructionCode.MAP_TO_STACK, emptyMap()),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 10L),
             new Instruction(InstructionCode.INTEGER_TO_STACK, 20L),
             new Instruction(InstructionCode.MAP_SET),

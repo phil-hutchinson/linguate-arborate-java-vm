@@ -363,9 +363,9 @@ public class VirtualMachine {
                 break;
                 
                 
-                case MAP_EMPTY_TO_STACK: {
-                    ArborateMap newMap = new ArborateMap();
-                    stack.push(newMap);
+                case MAP_TO_STACK: {
+                    ArborateMap val = (ArborateMap) nextInstruction.getData();
+                    stack.push(val);
                 }
                 break;
                 

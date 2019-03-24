@@ -12,6 +12,8 @@ package org.linguate.arborate.vm;
 public enum InstructionCode {
     // stack operations
 // stack operations
+// stack operations
+// stack operations
     VARIABLE_TO_STACK,
     STACK_TO_VARIABLE,
     
@@ -48,7 +50,7 @@ public enum InstructionCode {
     STRING_NOT_EQUAL,
     
     // map operations
-    MAP_EMPTY_TO_STACK,
+    MAP_TO_STACK,
     MAP_HAS,
     MAP_GET,
     MAP_SET,
